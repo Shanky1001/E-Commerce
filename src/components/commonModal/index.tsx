@@ -1,6 +1,6 @@
 "use client";
 
-import { closeDialogBox } from "@/redux/features/dialog";
+import { closeDialogBox } from "@/redux/features/dialogSlice";
 import { RootState } from "@/redux/store";
 import { Dialog, Transition } from "@headlessui/react";
 import { Fragment } from "react";

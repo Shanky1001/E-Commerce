@@ -1,8 +1,10 @@
 import { configureStore } from "@reduxjs/toolkit";
-import { DialogBoxSlice } from "./features/dialog";
+import { DialogBoxSlice } from "./features/dialogSlice";
+import { GeneralState } from "./features/generalSlice";
 
 export const store = configureStore({
 	reducer: {
+		general: GeneralState.reducer,
 		dialogBox: DialogBoxSlice.reducer,
 	},
 });
