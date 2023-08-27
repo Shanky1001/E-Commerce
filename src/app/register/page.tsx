@@ -3,21 +3,25 @@ import DropDown from "@/components/formComponents/DropDown";
 import InputField from "@/components/formComponents/InputField";
 import { ThreeDotsLoader } from "@/components/Loader";
 import { registrationForm } from "@/constants";
+import { setLoading, setUser } from "@/redux/features/generalSlice";
+import { useRegisterUserMutation } from "@/redux/query/auth";
 import { RootState } from "@/redux/store";
 import { useRouter } from "next/navigation";
 import React, { useMemo, useState } from "react";
-import { useSelector } from "react-redux";
-
+import { useDispatch, useSelector } from "react-redux";
+import { toast } from "react-toastify";
+const initialState = {
+	name: "",
+	email: "",
+	password: "",
+	role: "customer",
+};
 const Register = () => {
-	const [formData, setFormData] = useState({
-		name: "",
-		email: "",
-		password: "",
-		role: "customer",
-	});
+	const [formData, setFormData] = useState(initialState);
 	type valueType = keyof typeof formData;
 	const [registered, setRegistered] = useState(false);
 	const router = useRouter();
+	const dispatch = useDispatch();
 	const GeneralState = useSelector((state: RootState) => state.general);
 	const isValidForm = useMemo(() => {
 		return formData &&
@@ -30,8 +34,36 @@ const Register = () => {
 			? true
 			: false;
 	}, [formData]);
-
-	const handleRegister = () => {};
+	const [registerUser, loading] = useRegisterUserMutation();
+	// Function to register user
+	const handleRegister = async () => {
+		dispatch(setLoading(true));
+		await registerUser({
+			url: "/api/register",
+			data: formData,
+		})
+			.then((res: any) => {
+				if (res.data.success) {
+					toast.success(res.data.message, {
+						position: toast.POSITION.TOP_RIGHT,
+					});
+					dispatch(setUser(res.data.user));
+				} else {
+					toast.error(res.data.message, {
+						position: toast.POSITION.TOP_RIGHT,
+					});
+					setFormData(initialState);
+				}
+			})
+			.catch((err: any) => {
+				toast.error(err, {
+					position: toast.POSITION.TOP_RIGHT,
+				});
+			})
+			.finally(() => {
+				dispatch(setLoading(false));
+			});
+	};
 	// Handle Change in input field
 	const handleChange = (value: string, id: string) => {
 		setFormData({
@@ -92,7 +124,9 @@ const Register = () => {
 										className=" disabled:opacity-50 rounded-full inline-flex w-full items-center justify-center bg-black px-6 py-2 text-lg 
                  text-white transition-all duration-200 ease-in-out focus:shadow font-medium uppercase tracking-wide
                  "
-										disabled={!isValidForm}
+										disabled={
+											!isValidForm || GeneralState.loading
+										}
 										onClick={handleRegister}
 									>
 										{GeneralState.loading ? (

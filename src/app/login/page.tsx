@@ -2,10 +2,13 @@
 import InputField from "@/components/formComponents/InputField";
 import { ThreeDotsLoader } from "@/components/Loader";
 import { loginForm } from "@/constants";
+import { setLoading, setUser } from "@/redux/features/generalSlice";
+import { useGetLoginUserMutation } from "@/redux/query/auth";
 import { RootState } from "@/redux/store";
 import { useRouter } from "next/navigation";
 import React, { useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { toast } from "react-toastify";
 
 const Login = () => {
 	const [formData, setFormData] = useState({ email: "", password: "" });
@@ -13,16 +16,43 @@ const Login = () => {
 	const router = useRouter();
 	const GeneralState = useSelector((state: RootState) => state.general);
 	const dispatch = useDispatch();
-    // Handle Change in input field
+	// Handle Change in input field
 	const handleChange = (value: string, id: string) => {
 		setFormData({
 			...formData,
 			[id]: value,
 		});
 	};
-
+	const [loginUser] = useGetLoginUserMutation();
 	// To handle Login button
-	const handleLogin = () => {};
+	const handleLogin = async () => {
+		dispatch(setLoading(true));
+		await loginUser({
+			url: "/api/login",
+			data: formData,
+		})
+			.then((res: any) => {
+				if (res.data.success) {
+					toast.success(res.data.message, {
+						position: toast.POSITION.TOP_RIGHT,
+					});
+					dispatch(setUser(res.data.data.user));
+					router.push("/");
+				} else {
+					toast.success(res.data.message, {
+						position: toast.POSITION.TOP_RIGHT,
+					});
+				}
+			})
+			.catch((err: any) => {
+				toast.success(err, {
+					position: toast.POSITION.TOP_RIGHT,
+				});
+			})
+			.finally(() => {
+				dispatch(setLoading(false));
+			});
+	};
 
 	// To check if filled data is valid or not
 	const isValidForm = useMemo(() => {
@@ -63,7 +93,7 @@ const Login = () => {
 									className="disabled:opacity-50 rounded-full inline-flex w-full items-center justify-center bg-black px-6 py-2 text-lg 
                      text-white transition-all duration-200 ease-in-out focus:shadow font-medium uppercase tracking-wide
                      "
-									disabled={!isValidForm}
+									disabled={!isValidForm || GeneralState.loading}
 									onClick={handleLogin}
 								>
 									{GeneralState.loading ? (
