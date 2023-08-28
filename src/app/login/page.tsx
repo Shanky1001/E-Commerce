@@ -39,7 +39,7 @@ const Login = () => {
 					dispatch(setUser(res.data.data.user));
 					router.push("/");
 				} else {
-					toast.success(res.data.message, {
+					toast.error(res.data.message, {
 						position: toast.POSITION.TOP_RIGHT,
 					});
 				}
@@ -93,7 +93,9 @@ const Login = () => {
 									className="disabled:opacity-50 rounded-full inline-flex w-full items-center justify-center bg-black px-6 py-2 text-lg 
                      text-white transition-all duration-200 ease-in-out focus:shadow font-medium uppercase tracking-wide
                      "
-									disabled={!isValidForm || GeneralState.loading}
+									disabled={
+										!isValidForm || GeneralState.loading
+									}
 									onClick={handleLogin}
 								>
 									{GeneralState.loading ? (
@@ -106,7 +108,7 @@ const Login = () => {
 									)}
 								</button>
 								<div className="flex flex-col gap-2">
-									<p>New to website ?</p>
+									<p className="text-orange-600">New to website ?</p>
 									<button
 										className="inline-flex rounded-full w-full items-center justify-center bg-black px-6 py-2 text-lg 
                      text-white transition-all duration-200 ease-in-out focus:shadow font-medium uppercase tracking-wide

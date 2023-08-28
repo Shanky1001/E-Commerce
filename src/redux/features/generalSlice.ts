@@ -8,6 +8,7 @@ interface user {
 }
 const initialState = {
 	loading: false,
+	loading_id: "",
 	user: {
 		email: "",
 		name: "",
@@ -23,10 +24,22 @@ export const GeneralState = createSlice({
 		setLoading: (state, action) => {
 			state.loading = action.payload;
 		},
-		setUser:(state,action) =>{
-			state.user = action.payload
-		}
+		setLoadingId: (state, action) => {
+			state.loading_id = action.payload;
+		},
+		setUser: (state, action) => {
+			state.user = action.payload;
+		},
+		resetUser: (state) => {
+			state.user = {
+				email: "",
+				name: "",
+				_id: "",
+				role: "",
+			};
+		},
 	},
 });
-export const { setLoading,setUser } = GeneralState.actions;
+export const { setLoading, setLoadingId, setUser, resetUser } =
+	GeneralState.actions;
 export default GeneralState.reducer;

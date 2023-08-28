@@ -7,7 +7,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 const schema = Joi.object({
 	email: Joi.string().email().required(),
-	password: Joi.string().required(),
+	password: Joi.string().alphanum().min(6).required(),
 });
 
 export const POST = async (req: NextRequest) => {

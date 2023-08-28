@@ -6,7 +6,7 @@ export const ThreeDotsLoader = ({ text = "", color = "#4fa94d" }: any) => {
 		<span className="flex gap-1 items-center">
 			{text}
 			<ThreeDots
-				height="80"
+				height="30"
 				width="80"
 				radius="9"
 				color={color}

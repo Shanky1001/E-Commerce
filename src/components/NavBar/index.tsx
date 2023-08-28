@@ -3,16 +3,24 @@ import React from "react";
 import { useRouter } from "next/navigation";
 import { adminNavOptions, clientNavOptions } from "@/constants";
 import { MenuICON } from "@/assets/icons";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "@/redux/store";
+import { resetUser } from "@/redux/features/generalSlice";
+import Cookies from "js-cookie";
 
 const NavBar = () => {
-	const isAdmin = false;
-	const isAuthUser = false;
-	const user = {
-		role: "client",
-	};
+	const GeneralState = useSelector((state: RootState) => state.general);
+	const { user } = GeneralState;
+	const dispatch = useDispatch();
+	const isAdmin = user.role === "admin";
+	const isAuthUser = user._id !== "";
 
 	const router = useRouter();
-	const handleLogout = () => {};
+	const handleLogout = () => {
+		dispatch(resetUser());
+		Cookies.remove("token");
+		router.push("/");
+	};
 	return (
 		<>
 			<nav className="bg-white fixed w-full z-20 top-0 left-0 border-b border-gray-200">
@@ -58,7 +66,7 @@ const NavBar = () => {
 								</button>
 							) : (
 								<button
-									onClick={() => router.push("/admin-view")}
+									onClick={() => router.push("/admin")}
 									className={
 										"mt-1.5 rounded-full inline-block bg-black px-5 py-3 text-xs font-medium upprcase tracking-wide text-white"
 									}
